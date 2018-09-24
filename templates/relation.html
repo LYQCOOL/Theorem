@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}
+    relationship
+{% endblock %}
+{% block style %}
+    .active{
+    color: #5bc0de;font-size: 25px;
+    }
+{% endblock %}
+{% block content %}
+<center>
+    <h1 style="color: #5bc0de;font-weight: 600;width: 100%;">relationship</h1>
+</center>
+<div style="margin-top: 10px;display: inline-block;width:100%;" class="active;">
+    <div style="display: inline-block;padding:30px;text-align:center;background-color: #4cae4c;width: 29.5%;margin-left: 5%;">
+        <div style="width:100%">Theorem 1</div>
+        <div style="width:100%">{{ t1 }}</div>
+    </div>
+    <div style="display: inline-block;padding:30px;text-align:center;background-color: #4cae4c;width: 31%;">
+        <div style="width:100%">Relationship</div>
+        <div style="width:100%">{{ l_name_r }}</div>
+    </div>
+    <div style="display: inline-block;padding:30px;text-align:center;background-color: #4cae4c;width: 29%;">
+        <div style="width:100%">Theorem 2</div>
+        <div style="width:100%">{{ t2 }}</div>
+    </div>
+    <div style="display: inline-block;padding:30px;text-align:center;background-color: #afd9ee;width: 90%;margin-left:5%;margin-top:10px;">
+        <div style="width:100%">Description of relationship</div>
+        <div style="width:100%">{{ l_name_exp }}</div>
+    </div>
+    <div style="display: inline-block;padding:30px;text-align:center;background-color: #03a9f4;width: 90%;margin-left:5%;margin-top:10px;">
+        <div style="width:100%">Description of Reference</div>
+        <div style="width:100%">{{ ref }}</div>
+    </div>
+    <div style="display: inline-block;padding:30px;text-align:center;background-color: #FFC107;width: 90%;margin-left:5%;margin-top:10px;">
+        <div style="width:100%">Theorem sharer</div>
+        <div style="width:100%">{{ username }}</div>
+    </div>
+</div>
+{% endblock %}

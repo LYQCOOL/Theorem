@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% block title %}
+    Search theorems
+{% endblock %}
+{% block style %}
+     .active{
+    color:#5bc0de;
+    font-size:20px;}
+
+    .left-01 {
+           float: left;
+           background-color:yellow;
+           width: 200px;
+           height: 200px;
+       }
+       .right-01 {
+           float: right;
+           background-color: wheat;
+           width: 200px;
+           height: 200px;
+       }
+       .middle-01 {
+           margin: 20px 200px 0 150px;
+           background-color: #fff9ca;
+           height: 200px;
+       }
+{% endblock %}
+{% block  content%}
+<script src="https://cdn.bootcss.com/vue/2.5.17-beta.0/vue.min.js"></script>
+    <center>
+        <input id="share" type="text" style="margin-top: 20px;width: 350px;height:40px;border: double dodgerblue" placeholder="Please enter the name of the theorem">
+        <select id="operator" name="cars" style="height: 40px;border: 1px solid #2196F3;background-color: #fff;">
+            <option value="default">Operator</option>
+            {% for oper in operator %}
+                <option value= "{{ oper.id }}">{{ oper.type }}</option>
+            {% endfor %}
+        </select>
+        <input id="share2" type="text" class="hidden" style="margin-top: 20px;width: 350px;height:40px;border: double dodgerblue" placeholder="Please enter the name of the other theorem">
+
+        <input style="color: #FFF;margin-left: 10px;background-color: #00BCD4;width: 80px;border-radius:5px;height: 40px;font-size: 18px;" class="sousuo" type="button" value="Search">
+        <input id='huitu' style="color: #FFF;margin-left: 10px;background-color: #00BCD4;border-radius:5px;width: 200px;height: 40px;font-size: 18px;" class="huitu" type="button" value="Form the diagram">
+      </center>
+<div class="haha" id="theorem">
+<div class="data">
+    <ul>
+        <li v-for="(name ,index) in theorems">
+            <input class="resultItem" type="checkbox" v-model="checkList" :id="'a'+index" :value=name>
+            <label :for="'a'+index"><a :href="'/views/'+name" v-text="name"></a></label>
+        </li>
+    </ul>
+</div>
+    <div class="img-wrap" style="width:600px;height:400px"><img src="" alt="" id="theoremImg" style="width:100%;height:100%"></div>
+    <ul>
+        <li v-for="(item, index) in relation">
+            <a :href="item[0]" v-text="item[0]"></a>
+            <a :href='"/relation/?id="+item[3]' v-text="item[2]"></a>
+            <a :href="item[1]" v-text="item[1]"></a>
+        </li>
+    </ul>
+</div>
+
+{% endblock %}
+{% block script %}
+{% for each in node_list %}
+
+{% endfor %}
+<script>
+localStorage.setItem('checkList',JSON.stringify([]))
+var app = new Vue({
+    el:'#theorem',
+    data(){
+        return {
+            theorems: [],
+            checkList : [],
+            relation: []
+        }
+    },
+    watch:{
+        checkList(val){
+            let list = JSON.parse(localStorage.getItem('checkList'))
+            if(val.length===0){
+                list = []
+            }
+            for(let a in val){
+                if(list.indexOf(val[a])<0){ // there are no val in the list.
+                    list.push(val[a])
+
+                }else{ //delete the val in the list.
+                        //删除list中的VAL。
+                    for(let b in list){
+                        if(val.indexOf(list[b])<0){
+                            list.splice(b ,1)
+                        }
+                    }
+                }
+            }
+            //将list存到浏览器中，并保存为checklist
+            localStorage.setItem('checkList',JSON.stringify(list))
+        }
+    }
+});
+
+$.ajaxSetup({
+             beforeSend:function (xhr,settings) {
+                 xhr.setRequestHeader('X-CSRFtoken',$.cookie('csrftoken'));
+
+             }
+         });
+$("#huitu").click(function(){
+    //绘图时获取之前存储的选项
+    let data = localStorage.getItem('checkList');
+    console.log(data);
+    $('.resultItem').each(function(){
+        if(!$(this).prop("checked")){
+            $(this).parent().remove();
+        }
+    });
+    $.ajax({
+        url: "/draw_image/",
+        data: { 'data': data },
+        type: 'POST',
+        dataType: 'JSON',
+        success: function(res){
+            console.log(res)
+            $("#theoremImg").attr("src", "data:image/png;base64,"+ res.data.image)
+            app.relation = res.data.relation
+        },
+        error: function(err){
+            console.log(err)
+        }
+    })
+})
+$('#operator').change(function(){
+    var operatorId = $('#operator').val();
+    if(operatorId =='default' || operatorId == '3' || operatorId =="4" || operatorId == '5')
+    {
+        $('#share2').val('');
+        $('#share2').addClass('hidden');
+
+    }
+    else{
+        $('#share2').val('');
+        $('#share2').removeClass('hidden');
+
+    }
+})
+$('.sousuo').click(function ()
+ {
+     var operatorId = $('#operator').val();
+    var theorem1 = $('#share').val();
+    var  oper = $('#operator').find("option:selected").text();
+    var theorem2 = $('#share2').val();
+
+
+    if (theorem1 == '')
+    {
+        alert('Search content cannot be empty!!!Please enter the searched theorem name！！！');
+    }
+    else{
+        $('.resultItem').each(function(){
+            if(!$(this).prop("checked")){
+                $(this).parent().remove();
+            }
+        });
+        $.ajax({
+        url:'/views/',
+        data:{'content': theorem1, 'oper': oper ,'content2': theorem2
+            },
+        type:'POST',
+        dataType:'JSON',
+        success:function (res) {
+                if(res.successful){
+                    for(let item in res.data)
+                    {   
+                        var flag = 0;
+                        var theorem = '';
+                        if(operatorId == '1' || operatorId == '2' || operatorId == '6' || operatorId == '7')
+                        {
+                            theorem = res.data[item].replace('&&', $('#operator').find("option:selected").text());
+                        }
+                        else if(operatorId == '3' || operatorId == '4' || operatorId == '5')
+                        {
+                            theorem = res.data[item] + $('#operator').find("option:selected").text();
+                        }
+                        else
+                        {
+                            theorem = res.data[item];
+                        }
+
+                        for(let j in app.checkList)
+                        {
+                            if(theorem == app.checkList[j])
+                            {
+                                flag ++;
+                            }
+                        }
+                        if(app.checkList.length == 20)
+                        {
+                            flag ++;
+                        }
+                        
+                        if(flag == 0)
+                        {
+                            app.theorems.push(theorem);
+                        }
+                    }
+                }
+        },
+        error:function(err){
+                console.log(err)
+            }
+        })
+    }
+})
+</script>
+{% endblock %}

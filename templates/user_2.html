@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}
+    My account
+{% endblock %}
+{% block style%}
+     .active{
+    color:#5bc0de;
+    font-size:20px;}
+
+
+ .left-01 {
+           float: left;
+           background-color:yellow;
+           width: 200px;
+           height: 200px;
+       }
+       .right-01 {
+           float: right;
+           background-color: wheat;
+           width: 200px;
+           height: 200px;
+       }
+       .middle-01 {
+           margin: 20px 200px 0 150px;
+           background-color: #fff9ca;
+           height: 200px;
+       }
+{% endblock %}
+{% block content %}
+
+
+{% if status %}
+<h1>His theorem.</h1>
+    {% for row in data %}
+    <a href="/views/{{row}}"><button  type="button" style=" margin:10px 20px 0px; background-color: #03A9F4;font-size: 20px;width: 200px;color: #fff;">{{row}}</button></a>
+<br />
+{% endfor %}
+{% else %}
+    <h1>His haven't published a theorem.</h1>
+{% endif %}
+
+{% endblock %}
+

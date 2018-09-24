@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% block title %}
+    Theorem
+{% endblock %}
+{% block style %}
+     .active{
+    color:#5bc0de;
+    font-size:20px;}
+
+    .left-01 {
+           float: left;
+           background-color:yellow;
+           width: 200px;
+           height: 200px;
+       }
+       .right-01 {
+           float: right;
+           background-color: wheat;
+           width: 200px;
+           height: 200px;
+       }
+       .middle-01 {
+           margin: 20px 200px 0 150px;
+           background-color: #fff9ca;
+           height: 200px;
+       }
+{% endblock %}
+{% block  content%}
+    <center>
+          <input id="share" type="text" style="margin-top: 20px;width: 350px;height:40px;border: double dodgerblue" placeholder="Please enter the name of the distributor"><input style="color: #5bc0de;margin-left: 10px;background-color: #FFEEC2;width: 80px;height: 40px;font-size: 18px;" class="sousuo" type="button" value="Search">
+      </center>
+<div class="haha" id="theorem">
+</div>
+
+{% endblock %}
+{% block script %}
+<script>
+$.ajaxSetup({
+    beforeSend:function (xhr,settings) {
+        xhr.setRequestHeader('X-CSRFtoken',$.cookie('csrftoken'));
+    }
+});
+$("#share").bind("input propertychange",function(event){
+     if ($(this).val() == ''){
+        $("#theorem").empty();
+        alert('Search content cannot be empty, Please enter sharer.');
+    }
+    else
+    {
+        $.ajax({
+            url:'/users/',
+            data:{'content':$(this).val()},
+            type:'POST',
+            dataType:'JSON',
+            success:function (obj) {
+                if (obj.status)
+                {
+                    var where_in=document.getElementById('theorem');
+                    where_in.innerHTML = '';
+                    if (obj.relations){
+                        console.log('True');
+                         console.log(obj['data'])
+                        for(var i = 0;i < obj['data'].length;i=i+1){
+                            var myElement1 = document.createElement("div");
+                            var a1=document.createElement('a');
+                            
+                            a1.innerText = obj['data'][i];
+                            a1.href = '?user='+obj['data'][i];
+                            myElement1.style="width:300px;height:100px;border:1px solid red;border-radius:50px;line-height:100px;text-align:center;background-color: #FFEEC2;color: #5bc0de;margin-left:20px;margin-top:10px;display:inline-block;";
+                            myElement1.appendChild(a1);
+                            document.getElementById('theorem').appendChild(myElement1);
+
+                        }
+                    }
+                    else 
+                    {
+                        console.log('False');
+                        for(i = 0;i < $.parseJSON(obj['data']).length;i=i+1)
+                        {
+                            var myElement = document.createElement("div");
+                            var a=document.createElement('a');
+                            a.href = $.parseJSON(obj['data'])[i];
+                            a.innerText = $.parseJSON(obj['data'])[i];
+                            myElement.style="width:300px;height:100px;border:1px solid red;border-radius:50px;line-height:100px;text-align:center;background-color: #FFEEC2;color: #5bc0de;margin-left:20px;margin-top:10px;display:inline-block;";
+                            myElement.appendChild(a);
+                        //添加到document.body
+                            document.getElementById('theorem').appendChild(myElement);
+                        }
+                    }
+                }
+                else 
+                { 
+                    $("#theorem").empty();
+                }
+            }
+        })
+    }
+});
+
+$('.sousuo').click(function () {
+    if ($(this).prev().val() == ''){
+        alert('Search content cannot be empty,Please enter sharer .');
+    }
+    else
+    {
+        $.ajax({
+            url:'/users/',
+            data:{'content':$(this).prev().val()},
+            type:'POST',
+            dataType:'JSON',
+            success:function (obj) {
+                if (obj.status)
+                {
+                    alert('Search Success！！！');
+                    var where_in=document.getElementById('theorem');
+                    where_in.innerHTML = '';
+                    if (obj.relations)
+                    {
+                        for(var i = 0;i < obj['data'].length;i=i+1)
+                        {
+                            var myElement1 = document.createElement("div");
+                            var a1=document.createElement('a');
+                            a1.innerText = obj['data'][i];
+                            a1.href = '?user='+obj['data'][i];
+                            myElement1.style="width:300px;height:100px;border:1px solid red;border-radius:50px;line-height:100px;text-align:center;background-color: #FFEEC2;color: #5bc0de;margin-left:20px;margin-top:10px;display:inline-block;";
+                            myElement1.appendChild(a1);
+                            document.getElementById('theorem').appendChild(myElement1);
+                        }
+                    }
+                    else 
+                    {
+                        console.log('False');
+                        for(i = 0;i < $.parseJSON(obj['data']).length;i=i+1)
+                        {
+                            var myElement = document.createElement("div");
+                            var a=document.createElement('a');
+                            a.href = $.parseJSON(obj['data'])[i];
+                            a.innerText = $.parseJSON(obj['data'])[i];
+                            myElement.style="width:300px;height:100px;border:1px solid red;border-radius:50px;line-height:100px;text-align:center;background-color: #FFEEC2;color: #5bc0de;margin-left:20px;margin-top:10px;display:inline-block;";
+                            myElement.appendChild(a);
+                            //添加到document.body
+                            document.getElementById('theorem').appendChild(myElement);
+                        }
+                    }
+                }
+                else {
+                    alert(obj['error']);
+                    $("#theorem").empty();
+                }
+            }
+        })
+    }
+})
+</script>
+{% endblock %}

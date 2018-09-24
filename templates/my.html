@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% block title %}
+    My account
+{% endblock %}
+{% block style%}
+     .active{
+    color:#5bc0de;
+    font-size:20px;}
+
+
+ .left-01 {
+           float: left;
+           background-color:yellow;
+           width: 200px;
+           height: 200px;
+       }
+       .right-01 {
+           float: right;
+           background-color: wheat;
+           width: 200px;
+           height: 200px;
+       }
+       .middle-01 {
+           margin: 20px 200px 0 150px;
+           background-color: #fff9ca;
+           height: 200px;
+       }
+{% endblock %}
+{% block content %}
+
+<p style="background-color: #8BC34A;color:#FFF;font-size: 25px;padding: 10px;">nickname: {{  u2.nickname}}</p>
+    <p style="background-color: #00BCD4;color:#fff;font-size: 25px;padding: 10px;">description: {{  u2.description}}</p>
+
+{% if obj %}
+    {% for row in obj %}
+
+    <a href="/views/{{ row.name }}"><button  type="button" style=" margin:10px 20px 0px; background-color: #03A9F4;font-size: 20px;width: 200px;color: #fff;">{{ row.name }}</button></a>
+    <button type="button" data-toggle="modal" data-target="#{{ row.id }}" style="background-color: #03A9F4;font-size: 20px;width: 200px;color: #fff;">edit theorem</button>
+    <br/>
+    <div class="modal fade" id="{{ row.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        Edit <strong>{{ row.name }}</strong>
+                    </h4>
+                </div>
+                <div style="margin-top: 10px;" class="active;">
+                    <form action="/my/" method="post">
+                        {% csrf_token %}
+                        <div style="margin-left:50px;">
+                            <input class="hidden" type="text" placeholder="{{ row.name }}" value="{{ row.name }}" style="border: double dodger blue;width:95%;color: black;font-size: 15px;height: 40px;" name="t_name" class="title">
+                        </div>
+                        <div style="margin-left:50px;">
+                            <div>
+                                <label>Theorem for reference:</label>
+                            </div>
+                            <input type="text" placeholder="{{ row.ref }}" value="{{ row.ref }}" style="border: double dodger blue;width:95%;color: black;font-size: 15px;height: 40px;" name="t_ref" class="title">
+                        </div>
+                        <div style="margin-left:50px;">
+                            <div>
+                                <label>MCDC：(type: Positive integer, omega, infinity)</label>
+                            </div>
+                            <input type="text" placeholder="{{ row.mcdc_1 }}" value="{{ row.mcdc_1 }}" style="border: double dodger blue;width:47%;color: black;font-size: 15px;height: 40px;" name="mcdc1" class="title">-
+                            <input type="text" placeholder="{{ row.mcdc_2 }}" value="{{ row.mcdc_2 }}"  style="border: double dodger blue;width:47%;color: black;font-size: 15px;height: 40px;" name="mcdc2" class="title">
+                        </div>
+                            <div style="margin-left:50px;">
+                            <div >
+                                <label>Interpretation of the theorem:</label></div>
+                            <textarea style="width:95%;height: 200px;border: double dodger blue;color: black;font-size: 15px;" placeholder="{{ row.exp }}" name="t_exp" class="t_exp">{{ row.exp }}</textarea>
+                        </div>
+                        <div style="text-align: center;padding: 10px;">
+                            <input type="submit" value="submit" style="background-color: #00BCD4;color: #fff;font-size: 25px;width: 200px;"/>
+                        </div>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+{% endfor %}
+{% else %}
+    <h1>You haven't published a theorem.</h1>
+{% endif %}
+<script>
+    $("#post_description").click(function(){
+        function getCookie(name) 
+        {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            crossDomain: false, // obviates need for sameOrigin test
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type)) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+        var description=$("#edit_description").val();
+        $.post("/description/",{description:description},
+        function () {
+            alert("success");
+            window.location.reload();
+        });
+})
+    $("#post_nickname").click(function(){
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            var csrftoken = getCookie('csrftoken');
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+            $.ajaxSetup({
+                crossDomain: false, // obviates need for sameOrigin test
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type)) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+            var nickname=$("#edit_nickname").val();
+            $.post("/nickname/",{nickname:nickname},
+            function () {
+                alert("success");
+                window.location.reload();
+            });
+        })
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+</script>
+{{ error|safe }}
+{% endblock %}
+
