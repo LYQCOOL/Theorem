@@ -437,11 +437,11 @@ def my(request):
 def add_r(request):
     f = request.session.get('is_login', None)
     u = request.session.get('user', None)
-    user = User.objects.get(username=u)
     obj = models.Wlibrary.objects.all()
     nexus = models.Nexus.objects.all()
     error = ''
     if f:
+        user = User.objects.get(username=u)
         if request.method == 'GET':
             return render(request, 'add_r.html', {'u': u, 'obj': obj, 'error': error, 'nexus': nexus})
         elif request.method == 'POST':
